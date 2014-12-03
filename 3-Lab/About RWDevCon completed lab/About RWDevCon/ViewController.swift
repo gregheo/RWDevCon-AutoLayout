@@ -25,17 +25,102 @@ import UIKit
 class ViewController: UIViewController {
 
   @IBOutlet weak var advancedView: UIView!
-  @IBOutlet weak var advancedButton: UIButton!
-
   @IBOutlet weak var intermediateView: UIView!
+  @IBOutlet weak var advancedButton: UIButton!
   @IBOutlet weak var intermediateButton: UIButton!
 
   var advancedLabel: UILabel!
-  var advancedVerticalConstraint: NSLayoutConstraint!
-
   var intermediateLabel: UILabel!
 
+  var advancedVerticalConstraint: NSLayoutConstraint!
+
   let verticalMargin: CGFloat = 8.0
+
+  @IBAction func detailsButtonTapped(sender: AnyObject) {
+    if advancedLabel == nil {
+      addAdvancedLabel()
+      addIntermediateLabel()
+    } else {
+      toggleLabel()
+    }
+  }
+
+  private func addAdvancedLabel() {
+    // 1
+    advancedLabel = UILabel()
+    advancedLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
+    advancedLabel.text = "Dive deep into a guided tour of more advanced topics like functional programming, Scene Kit, and more!"
+    advancedLabel.numberOfLines = 0
+    advancedView.addSubview(advancedLabel)
+
+    // 2
+    advancedVerticalConstraint = NSLayoutConstraint(
+      item: advancedLabel,
+      attribute: .Top,
+      relatedBy: .Equal,
+      toItem: advancedButton,
+      attribute: .Bottom,
+      multiplier: 1.0,
+      constant: verticalMargin)
+    advancedView.addConstraint(advancedVerticalConstraint)
+
+    // 3
+    advancedView.addConstraint(NSLayoutConstraint(
+      item: advancedLabel,
+      attribute: .Leading,
+      relatedBy: .Equal,
+      toItem: advancedView,
+      attribute: .LeadingMargin,
+      multiplier: 1.0,
+      constant: 0))
+
+    // 4
+    advancedView.addConstraint(NSLayoutConstraint(
+      item: advancedLabel,
+      attribute: .Trailing,
+      relatedBy: .Equal,
+      toItem: advancedView,
+      attribute: .TrailingMargin,
+      multiplier: 1.0,
+      constant: 0))
+  }
+
+  private func addIntermediateLabel() {
+    intermediateLabel = UILabel()
+    intermediateLabel.setTranslatesAutoresizingMaskIntoConstraints(
+      false)
+    intermediateLabel.text = "This track is for Objective-C developers who are not yet fully up-to-speed with Swift."
+    intermediateLabel.numberOfLines = 0
+    intermediateView.addSubview(intermediateLabel)
+
+    // 1
+    let views = ["intermediateLabel": intermediateLabel,
+      "intermediateView": intermediateView,
+      "intermediateButton": intermediateButton]
+    let metrics = ["margin": 4, "verticalMargin": verticalMargin]
+
+    // 2
+    intermediateView.addConstraints(
+      NSLayoutConstraint.constraintsWithVisualFormat(
+        "H:|-margin-[intermediateLabel]-margin-|",
+        options: nil, metrics: metrics, views: views))
+    // 3
+    intermediateView.addConstraints(
+      NSLayoutConstraint.constraintsWithVisualFormat(
+        "V:[intermediateButton]-verticalMargin-[intermediateLabel]",
+        options: nil, metrics: metrics, views: views))
+  }
+
+  private func toggleLabel() {
+    if intermediateLabel.alpha == 0 {
+      intermediateLabel.alpha = 1
+      advancedVerticalConstraint.constant = verticalMargin
+    } else {
+      intermediateLabel.alpha = 0
+      advancedVerticalConstraint.constant =
+        CGRectGetHeight(advancedView.frame)
+    }
+  }
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -58,68 +143,4 @@ class ViewController: UIViewController {
     // Dispose of any resources that can be recreated.
   }
   
-  @IBAction func detailsButtonTapped(sender: AnyObject) {
-    if advancedLabel == nil {
-      addAdvancedLabel()
-      addIntermediateLabel()
-    } else {
-      toggleLabel()
-    }
-  }
-
-  private func addAdvancedLabel() {
-    advancedLabel = UILabel()
-    advancedLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
-    advancedLabel.text = "Dive deep into a guided tour of more advanced topics like functional programming, Scene Kit, and more!"
-    advancedLabel.numberOfLines = 0
-    advancedView.addSubview(advancedLabel)
-
-    advancedVerticalConstraint = NSLayoutConstraint(item: advancedLabel,
-      attribute: .Top,
-      relatedBy: .Equal,
-      toItem: advancedButton,
-      attribute: .Bottom,
-      multiplier: 1.0,
-      constant: verticalMargin)
-    advancedView.addConstraint(advancedVerticalConstraint)
-
-    advancedView.addConstraint(NSLayoutConstraint(item: advancedLabel,
-      attribute: .Leading,
-      relatedBy: .Equal,
-      toItem: advancedView,
-      attribute: .LeadingMargin,
-      multiplier: 1.0,
-      constant: 0))
-    advancedView.addConstraint(NSLayoutConstraint(item: advancedLabel,
-      attribute: .Trailing,
-      relatedBy: .Equal,
-      toItem: advancedView,
-      attribute: .TrailingMargin,
-      multiplier: 1.0,
-      constant: 0))
-  }
-
-  private func addIntermediateLabel() {
-    intermediateLabel = UILabel()
-    intermediateLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
-    intermediateLabel.text = "This track is for Objective-C developers who are not yet fully up-to-speed with Swift."
-    intermediateLabel.numberOfLines = 0
-    intermediateView.addSubview(intermediateLabel)
-
-    let views = ["intermediateLabel": intermediateLabel, "intermediateView": intermediateView, "intermediateButton": intermediateButton]
-    let metrics = ["margin": 4, "verticalMargin": verticalMargin]
-
-    intermediateView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-margin-[intermediateLabel]-margin-|", options: nil, metrics: metrics, views: views))
-    intermediateView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[intermediateButton]-verticalMargin-[intermediateLabel]", options: nil, metrics: metrics, views: views))
-  }
-
-  private func toggleLabel() {
-    if intermediateLabel.alpha == 0 {
-      intermediateLabel.alpha = 1
-      advancedVerticalConstraint.constant = verticalMargin
-    } else {
-      intermediateLabel.alpha = 0
-      advancedVerticalConstraint.constant = CGRectGetHeight(advancedView.frame)
-    }
-  }
 }
