@@ -62,27 +62,29 @@ class ViewController: UIViewController {
       attribute: .Bottom,
       multiplier: 1.0,
       constant: verticalMargin)
-    advancedView.addConstraint(advancedVerticalConstraint)
+    advancedVerticalConstraint.active = true
 
     // 3
-    advancedView.addConstraint(NSLayoutConstraint(
+    let leadingConstraint = NSLayoutConstraint(
       item: advancedLabel,
       attribute: .Leading,
       relatedBy: .Equal,
       toItem: advancedView,
       attribute: .LeadingMargin,
       multiplier: 1.0,
-      constant: 0))
+      constant: 0)
+    leadingConstraint.active = true
 
     // 4
-    advancedView.addConstraint(NSLayoutConstraint(
+    let trailingConstraint = NSLayoutConstraint(
       item: advancedLabel,
       attribute: .Trailing,
       relatedBy: .Equal,
       toItem: advancedView,
       attribute: .TrailingMargin,
       multiplier: 1.0,
-      constant: 0))
+      constant: 0)
+    trailingConstraint.active = true
   }
 
   private func addIntermediateLabel() {
@@ -100,15 +102,18 @@ class ViewController: UIViewController {
     let metrics = ["margin": 4, "verticalMargin": verticalMargin]
 
     // 2
-    intermediateView.addConstraints(
+    let horizontalConstraints =
       NSLayoutConstraint.constraintsWithVisualFormat(
         "H:|-margin-[intermediateLabel]-margin-|",
-        options: nil, metrics: metrics, views: views))
+        options: nil, metrics: metrics, views: views)
     // 3
-    intermediateView.addConstraints(
+    let verticalConstraints =
       NSLayoutConstraint.constraintsWithVisualFormat(
         "V:[intermediateButton]-verticalMargin-[intermediateLabel]",
-        options: nil, metrics: metrics, views: views))
+        options: nil, metrics: metrics, views: views)
+
+    // 4
+    NSLayoutConstraint.activateConstraints(horizontalConstraints + verticalConstraints)
   }
 
   private func toggleLabel() {
