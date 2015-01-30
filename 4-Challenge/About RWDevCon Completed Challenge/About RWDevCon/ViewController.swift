@@ -23,11 +23,13 @@
 import UIKit
 
 class ViewController: UIViewController {
-
-  @IBOutlet weak var advancedView: UIView!
+  @IBOutlet weak var beginnerView: UIView!
   @IBOutlet weak var intermediateView: UIView!
-  @IBOutlet weak var advancedButton: UIButton!
+  @IBOutlet weak var advancedView: UIView!
+
+  @IBOutlet weak var beginnerButton: UIButton!
   @IBOutlet weak var intermediateButton: UIButton!
+  @IBOutlet weak var advancedButton: UIButton!
 
   var advancedLabel: UILabel!
   var intermediateLabel: UILabel!
@@ -36,13 +38,58 @@ class ViewController: UIViewController {
 
   let verticalMargin: CGFloat = 8.0
 
-  @IBAction func detailsButtonTapped(sender: AnyObject) {
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    // Do any additional setup after loading the view, typically from a nib.
+  }
+
+  @IBAction func detailsButtonTapped(sender: UIButton) {
     if advancedLabel == nil {
       addAdvancedLabel()
       addIntermediateLabel()
     } else {
       toggleLabel()
     }
+  }
+
+  private func toggleLabel() {
+    if intermediateLabel.alpha == 0 {
+    intermediateLabel.alpha = 1
+    advancedVerticalConstraint.constant = verticalMargin
+  } else {
+    intermediateLabel.alpha = 0
+    advancedVerticalConstraint.constant =
+    CGRectGetHeight(advancedView.frame)
+    }
+  }
+
+  private func addIntermediateLabel() {
+    intermediateLabel = UILabel()
+    intermediateLabel.setTranslatesAutoresizingMaskIntoConstraints(
+      false)
+    intermediateLabel.text = "This track is for Objective-C developers who are not yet fully up-to-speed with Swift."
+    intermediateLabel.numberOfLines = 0
+    intermediateView.addSubview(intermediateLabel)
+
+    // 1
+    let views = ["intermediateLabel": intermediateLabel,
+      "intermediateView": intermediateView,
+      "intermediateButton": intermediateButton]
+    let metrics = ["margin": 4, "verticalMargin": verticalMargin]
+
+    // 2
+    let horizontalConstraints =
+    NSLayoutConstraint.constraintsWithVisualFormat(
+      "H:|-margin-[intermediateLabel]-margin-|",
+      options: nil, metrics: metrics, views: views)
+    // 3
+    let verticalConstraints =
+    NSLayoutConstraint.constraintsWithVisualFormat(
+      "V:[intermediateButton]-verticalMargin-[intermediateLabel]",
+      options: nil, metrics: metrics, views: views)
+
+    // 4
+    NSLayoutConstraint.activateConstraints(horizontalConstraints + verticalConstraints)
   }
 
   private func addAdvancedLabel() {
@@ -85,51 +132,6 @@ class ViewController: UIViewController {
       multiplier: 1.0,
       constant: 0)
     trailingConstraint.active = true
-  }
-
-  private func addIntermediateLabel() {
-    intermediateLabel = UILabel()
-    intermediateLabel.setTranslatesAutoresizingMaskIntoConstraints(
-      false)
-    intermediateLabel.text = "This track is for Objective-C developers who are not yet fully up-to-speed with Swift."
-    intermediateLabel.numberOfLines = 0
-    intermediateView.addSubview(intermediateLabel)
-
-    // 1
-    let views = ["intermediateLabel": intermediateLabel,
-      "intermediateView": intermediateView,
-      "intermediateButton": intermediateButton]
-    let metrics = ["margin": 4, "verticalMargin": verticalMargin]
-
-    // 2
-    let horizontalConstraints =
-      NSLayoutConstraint.constraintsWithVisualFormat(
-        "H:|-margin-[intermediateLabel]-margin-|",
-        options: nil, metrics: metrics, views: views)
-    // 3
-    let verticalConstraints =
-      NSLayoutConstraint.constraintsWithVisualFormat(
-        "V:[intermediateButton]-verticalMargin-[intermediateLabel]",
-        options: nil, metrics: metrics, views: views)
-
-    // 4
-    NSLayoutConstraint.activateConstraints(horizontalConstraints + verticalConstraints)
-  }
-
-  private func toggleLabel() {
-    if intermediateLabel.alpha == 0 {
-      intermediateLabel.alpha = 1
-      advancedVerticalConstraint.constant = verticalMargin
-    } else {
-      intermediateLabel.alpha = 0
-      advancedVerticalConstraint.constant =
-        CGRectGetHeight(advancedView.frame)
-    }
-  }
-
-  override func viewDidLoad() {
-    super.viewDidLoad()
-    // Do any additional setup after loading the view, typically from a nib.
   }
 
   override func viewWillAppear(animated: Bool) {
