@@ -140,7 +140,7 @@ github.com style (c) Vasily Polovnyov <vast@whiteants.net>
 </style>
 
 </head>
-<body class="normal firstload">
+<body class="normal">
   <div id="wrapper">
       <h1 id="session103:autolayoutlab">Session 103: Auto Layout Lab</h1>
 
@@ -174,19 +174,62 @@ github.com style (c) Vasily Polovnyov <vast@whiteants.net>
 
 <p>You’ll need these outlets to add the constraints to the containers, and to position the new views you’ll be adding relative to the buttons.</p>
 
-<p>The image buttons don&#8217;t have actions connected. In the final app the buttons might push something onto the navigation stack to show the sessions for each conference track but that&#8217;s left as an exercise for the reader since it doesn&#8217;t relate to auto layout directly. ;]</p>
+<p>The image buttons don&#8217;t have actions connected. In the final app the buttons might push something onto the navigation stack to show the sessions for each conference track but that&#8217;s left as an exercise (or challenge) for the reader since it doesn&#8217;t relate to auto layout directly. ;]</p>
 
 <h2 id="manualconstraintrelationships">Manual constraint relationships</h2>
 
-<p>Open ViewController.swift and add the following properties to the class:</p>
-<pre><code class="swift">var advancedLabel: UILabel!var intermediateLabel: UILabel!var advancedVerticalConstraint: NSLayoutConstraint!let verticalMargin: CGFloat = 8.0</code></pre>
+<p>Open <strong>ViewController.swift</strong> and add the following properties to the class:</p>
+<pre><code>var advancedLabel: UILabel!
+var intermediateLabel: UILabel!
+
+<p>var advancedVerticalConstraint: NSLayoutConstraint!</p>
+let verticalMargin: CGFloat = 8.0</code></pre>
 
 <p>You’ll be adding new labels to the interface from code to show a description of the track. You’ll also want to hold a reference to one of the layout constraints, <code>advancedVerticalConstraint</code>, to modify it later.</p>
 
 <p>Finally, <code>verticalMargin</code> is a constant that you’ll use to keep the spacing consistent.</p>
 
 <p>Next, add the following helper method to the class:</p>
-<pre><code class="swift">private func addAdvancedLabel() {  // 1  advancedLabel = UILabel()  advancedLabel.setTranslatesAutoresizingMaskIntoConstraints(false)  advancedLabel.text = &quot;Dive deep into a guided tour of more advanced topics like functional programming, Scene Kit, and more!&quot;  advancedLabel.numberOfLines = 0  advancedView.addSubview(advancedLabel)  // 2  advancedVerticalConstraint = NSLayoutConstraint(    item: advancedLabel,    attribute: .Top,    relatedBy: .Equal,    toItem: advancedButton,    attribute: .Bottom,    multiplier: 1.0,    constant: verticalMargin)  advancedVerticalConstraint.active = true  // 3  let leadingConstraint = NSLayoutConstraint(    item: advancedLabel,    attribute: .Leading,    relatedBy: .Equal,    toItem: advancedView,    attribute: .LeadingMargin,    multiplier: 1.0,    constant: 0)  leadingConstraint.active = true  // 4  let trailingConstraint = NSLayoutConstraint(    item: advancedLabel,    attribute: .Trailing,    relatedBy: .Equal,    toItem: advancedView,    attribute: .TrailingMargin,    multiplier: 1.0,    constant: 0)  trailingConstraint.active = true}</code></pre>
+<pre><code>private func addAdvancedLabel() {
+ // 1
+ advancedLabel = UILabel()
+ advancedLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
+ advancedLabel.text = &quot;Dive deep into a guided tour of more advanced topics like functional programming, Scene Kit, and more!&quot;
+ advancedLabel.numberOfLines = 0
+ advancedView.addSubview(advancedLabel)
+
+<p>// 2
+ advancedVerticalConstraint = NSLayoutConstraint(
+ item: advancedLabel,
+ attribute: .Top,
+ relatedBy: .Equal,
+ toItem: advancedButton,
+ attribute: .Bottom,
+ multiplier: 1.0,
+ constant: verticalMargin)
+ advancedVerticalConstraint.active = true</p>
+
+<p>// 3
+ let leadingConstraint = NSLayoutConstraint(
+ item: advancedLabel,
+ attribute: .Leading,
+ relatedBy: .Equal,
+ toItem: advancedView,
+ attribute: .LeadingMargin,
+ multiplier: 1.0,
+ constant: 0)
+ leadingConstraint.active = true</p>
+ // 4
+ let trailingConstraint = NSLayoutConstraint(
+ item: advancedLabel,
+ attribute: .Trailing,
+ relatedBy: .Equal,
+ toItem: advancedView,
+ attribute: .TrailingMargin,
+ multiplier: 1.0,
+ constant: 0)
+ trailingConstraint.active = true
+}</code></pre>
 
 <p>This method will create a new label and set up its size and position with layout constraints. Here’s what’s going on, section by section:</p>
 
@@ -206,7 +249,9 @@ github.com style (c) Vasily Polovnyov <vast@whiteants.net>
 <p>That’s all you need! The label is set to 0 lines so it will automatically grow vertically to fit the amount of text. The constraints give the label its x- and y-positions, so you shouldn’t have any layout ambiguity.</p>
 
 <p>Add the following lines to <code>detailsButtonTapped()</code>:</p>
-<pre><code class="swift">if advancedLabel == nil {  addAdvancedLabel()}</code></pre>
+<pre><code>if advancedLabel == nil {
+ addAdvancedLabel()
+}</code></pre>
 
 <p>This will call the helper method to set up the label.</p>
 
@@ -221,7 +266,7 @@ github.com style (c) Vasily Polovnyov <vast@whiteants.net>
 <p>Creating <code>NSLayoutConstraint</code> instances one at a time works but can be a lot of code. Instead, you can use the <strong>visual format language</strong>, which is an ASCII-art style way to define your layout constraints.</p>
 
 <p>Here’s an example of the visual format language:</p>
-<pre><code class="(null)">H:|-8-[myButton(90)]-20-[topLabel]-8-|</code></pre>
+<pre><code class="(null)">H:|&#8211;8-[myButton(90)]&#8211;20-[topLabel]&#8211;8-|</code></pre>
 
 <p>The “H:” at the beginning means this is a representation of the horizontal layout.</p>
 
@@ -234,7 +279,34 @@ github.com style (c) Vasily Polovnyov <vast@whiteants.net>
 <p>You would then need a similar bit of VFL for the vertical constraints.</p>
 
 <p>Let’s see this in real life. Add the following helper method to the class to set up the intermediate track label:</p>
-<pre><code class="swift">private func addIntermediateLabel() {  intermediateLabel = UILabel()  intermediateLabel.setTranslatesAutoresizingMaskIntoConstraints(    false)  intermediateLabel.text = &quot;This track is for Objective-C developers who are not yet fully up-to-speed with Swift.&quot;  intermediateLabel.numberOfLines = 0  intermediateView.addSubview(intermediateLabel)  // 1  let views = [&quot;intermediateLabel&quot;: intermediateLabel,    &quot;intermediateView&quot;: intermediateView,    &quot;intermediateButton&quot;: intermediateButton]  let metrics = [&quot;margin&quot;: 4, &quot;verticalMargin&quot;: verticalMargin]  // 2  let horizontalConstraints =    NSLayoutConstraint.constraintsWithVisualFormat(      &quot;H:|-margin-[intermediateLabel]-margin-|&quot;,      options: nil, metrics: metrics, views: views)  // 3  let verticalConstraints =    NSLayoutConstraint.constraintsWithVisualFormat(      &quot;V:[intermediateButton]-verticalMargin-[intermediateLabel]&quot;,      options: nil, metrics: metrics, views: views)  // 4  NSLayoutConstraint.activateConstraints(    horizontalConstraints + verticalConstraints)}</code></pre>
+<pre><code>private func addIntermediateLabel() {
+ intermediateLabel = UILabel()
+ intermediateLabel.setTranslatesAutoresizingMaskIntoConstraints(
+ false)
+ intermediateLabel.text = &quot;This track is for Objective-C developers who are not yet fully up-to-speed with Swift.&quot;
+ intermediateLabel.numberOfLines = 0
+ intermediateView.addSubview(intermediateLabel)
+
+<p>// 1
+ let views = [&quot;intermediateLabel&quot;: intermediateLabel,
+ &quot;intermediateView&quot;: intermediateView,
+ &quot;intermediateButton&quot;: intermediateButton]
+ let metrics = [&quot;margin&quot;: 4, &quot;verticalMargin&quot;: verticalMargin]</p>
+
+<p>// 2
+ let horizontalConstraints =
+ NSLayoutConstraint.constraintsWithVisualFormat(
+ &quot;H:|-margin-[intermediateLabel]-margin-|&quot;,
+ options: nil, metrics: metrics, views: views)
+ // 3
+ let verticalConstraints =
+ NSLayoutConstraint.constraintsWithVisualFormat(
+ &quot;V:[intermediateButton]-verticalMargin-[intermediateLabel]&quot;,
+ options: nil, metrics: metrics, views: views)</p>
+ // 4
+ NSLayoutConstraint.activateConstraints(
+ horizontalConstraints + verticalConstraints)
+}</code></pre>
 
 <p>The first bit of code is similar to the advanced label in setting up the UILabel and its properties. Things get a little different after that point:</p>
 
@@ -250,7 +322,10 @@ github.com style (c) Vasily Polovnyov <vast@whiteants.net>
 <p>Note that <code>constraintsWithVisualFormat()</code> has an “s” at the end of the word constraints since it returns an array of constraints. You could have a whole set of views in your VFL string, so one string could map to many constraints. You can see how this can be much more efficient than creating <code>NSLayoutConstraint</code> objects one at a time as you did for the advanced label!</p>
 
 <p>Now that the helper method is set up, update <code>detailsButtonTapped()</code> to add the new method call:</p>
-<pre><code class="swift">if advancedLabel == nil {  addAdvancedLabel()  addIntermediateLabel()}</code></pre>
+<pre><code>if advancedLabel == nil {
+ addAdvancedLabel()
+ addIntermediateLabel()
+}</code></pre>
 
 <p>Build and run, tap the Details button, and you’ll see both labels in place!</p>
 
@@ -263,7 +338,16 @@ github.com style (c) Vasily Polovnyov <vast@whiteants.net>
 <p>Tapping the Details button will show the labels, but it tapping it again doesn&#8217;t do anything. It makes sense for the button to actually toggle the labels on and off.</p>
 
 <p>Add the following helper method to toggle the two labels on and off:</p>
-<pre><code class="swift">private func toggleLabel() {  if intermediateLabel.alpha == 0 {    intermediateLabel.alpha = 1    advancedVerticalConstraint.constant = verticalMargin  } else {    intermediateLabel.alpha = 0    advancedVerticalConstraint.constant =      CGRectGetHeight(advancedView.frame)  }}</code></pre>
+<pre><code>private func toggleLabel() {
+ if intermediateLabel.alpha == 0 {
+ intermediateLabel.alpha = 1
+ advancedVerticalConstraint.constant = verticalMargin
+ } else {
+ intermediateLabel.alpha = 0
+ advancedVerticalConstraint.constant =
+ CGRectGetHeight(advancedView.frame)
+ }
+}</code></pre>
 
 <p>For the intermediate label, you’re changing the alpha to 1 to show it, and 0 to hide it.</p>
 
@@ -271,10 +355,15 @@ github.com style (c) Vasily Polovnyov <vast@whiteants.net>
 
 <p>To hide the label, you’re setting the constant to the height of the container frame. That will push the label down below the bounds of the screen and effectively hide it.</p>
 
-<p>In this case, the effect is the same so the labels will just show and hide as you&#8217;d expect. So why might you use the constraint method? Changing the alpha vs changing the position could make a difference if there were animations involved. <em>That&#8217;s a subtle hint about another RWDevCon session. ;]</em></p>
+<p>In this case, the effect is the same so the labels will just show and hide as you&#8217;d expect. So why might you use the constraint method? Changing the alpha vs changing the position could make a difference if there were <strong>animations</strong> involved. <em>That&#8217;s a subtle hint about an upcoming RWDevCon session. ;]</em></p>
 
 <p>Finally, update the implementation of <code>detailsButtonTapped()</code> with the following:</p>
-<pre><code class="swift">if advancedLabel == nil {  addAdvancedLabel()  addIntermediateLabel()} else {  toggleLabel()}</code></pre>
+<pre><code>if advancedLabel == nil {
+ addAdvancedLabel()
+ addIntermediateLabel()
+} else {
+ toggleLabel()
+}</code></pre>
 
 <p>If this is the first button tap, the method will add the two labels to the view. On subsequent taps, the method will call <code>toggleLabel()</code> instead.</p>
 
